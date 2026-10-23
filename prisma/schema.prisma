@@ -1,0 +1,138 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum StudentType {
+  REGULAR
+  LATERAL_ENTRY
+  PWD
+}
+
+enum ActivityGroup {
+  GROUP_1
+  GROUP_2
+  GROUP_3
+}
+
+enum AchievementLevel {
+  COLLEGE
+  ZONAL
+  STATE
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CertificateStorage {
+  LOCAL
+  NEON
+}
+
+enum CertificateEncoding {
+  IDENTITY
+  GZIP
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  name               String
+  email              String              @unique
+  password           String
+  role               Role                @default(STUDENT)
+  registerNo         String?             @unique
+  branch             String?
+  studentType        StudentType         @default(REGULAR)
+  createdAt          DateTime            @default(now())
+  submissions        Submission[]
+  certificateUploads CertificateUpload[]
+
+  @@index([role])
+}
+
+model CertificateUpload {
+  id        String   @id @default(uuid())
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  key       String   @unique
+  size      Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([studentId, expiresAt])
+  @@index([expiresAt])
+}
+
+model Category {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  group         ActivityGroup
+  title         String
+  maxPointsCap  Int            @default(40)
+  isActive      Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  activityHeads ActivityHead[]
+
+  @@unique([group, title])
+  @@index([group, isActive])
+}
+
+model ActivityHead {
+  id               String       @id @default(uuid())
+  code             String       @unique
+  categoryId       String
+  category         Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  title            String
+  evidenceRequired String       @default("")
+  maxPointsCap     Int?
+  pointsConfig     Json
+  isActive         Boolean      @default(true)
+  sortOrder        Int          @default(0)
+  createdAt        DateTime     @default(now())
+  submissions      Submission[]
+
+  @@index([categoryId, isActive])
+}
+
+model Submission {
+  id                  String              @id @default(uuid())
+  studentId           String
+  student             User                @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  activityHeadId      String
+  activityHead        ActivityHead        @relation(fields: [activityHeadId], references: [id], onDelete: Restrict)
+  group               ActivityGroup
+  certificateUrl      String              @unique
+  certificateStorage  CertificateStorage  @default(LOCAL)
+  certificateEncoding CertificateEncoding @default(IDENTITY)
+  certificateSize     Int                 @default(0)
+  level               AchievementLevel?
+  selectedOption      String?
+  hoursSpent          Int?
+  claimLabel          String?
+  claimedPoints       Int
+  approvedPoints      Int?
+  status              SubmissionStatus    @default(PENDING)
+  adminRemarks        String?
+  submittedAt         DateTime            @default(now())
+  reviewedAt          DateTime?
+
+  @@index([studentId, submittedAt])
+  @@index([status, submittedAt])
+  @@index([studentId, activityHeadId, status])
+}

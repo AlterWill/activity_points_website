@@ -1,69 +1,99 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { getCurrentUser } from '@/lib/auth'
+import { Award, ArrowRight } from 'lucide-react'
 
-export default function Home() {
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  const user = await getCurrentUser()
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative overflow-hidden bg-white">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 text-center lg:pt-24 lg:pb-28">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold mb-6">
+          <Award className="w-4 h-4 text-indigo-600" />
+          <span>APJ Abdul Kalam Technological University &bull; 2024 Scheme Guidelines</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-none max-w-4xl mx-auto">
+          KTU Student <span className="text-indigo-600">Activity Points</span> Management System
+        </h1>
+
+        <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          Automated tracking, certificate verification, and approval management for KTU B.Tech students and Senior Faculty Advisors (SFA).
+        </p>
+
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          {user ? (
+            <Link
+              href={user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-100 transition"
+            >
+              Open your {user.role === 'ADMIN' ? 'advisor' : 'student'} dashboard
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-100 transition"
+              >
+                Sign In to Portal
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+              <Link
+                href="/register"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition"
+              >
+                Register as Student
+              </Link>
+            </>
+          )}
         </div>
-      </main>
+
+        {/* 3 Scheme Cards */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-5xl mx-auto">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm mb-4">
+              I
+            </div>
+            <h3 className="font-bold text-slate-900 text-base">Group I: Sports & Culture</h3>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Sports, Games, Arts, NSS, NCC, Blood Donation, Emergency Training, Certified Swimming & Driving License.
+            </p>
+            <div className="mt-4 pt-3 border-t border-slate-200 text-xs font-semibold text-indigo-700">
+              Min 40 Pts Required (Regular)
+            </div>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm mb-4">
+              II
+            </div>
+            <h3 className="font-bold text-slate-900 text-base">Group II: Technical & Tests</h3>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Tech-Fests, Paper Presentations, Professional Bodies, FOSS Contributions, Standardized Tests (GATE, CAT, GRE, TOEFL).
+            </p>
+            <div className="mt-4 pt-3 border-t border-slate-200 text-xs font-semibold text-emerald-700">
+              Min 40 Pts Required (Regular)
+            </div>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm mb-4">
+              III
+            </div>
+            <h3 className="font-bold text-slate-900 text-base">Group III: Industry & Startups</h3>
+            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+              Industrial Internships, Startups, Patents, Hackathons, and Approved Skilling / MOOC Certifications (NPTEL/SWAYAM).
+            </p>
+            <div className="mt-4 pt-3 border-t border-slate-200 text-xs font-semibold text-blue-700">
+              Min 40 Pts Required (Regular)
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
