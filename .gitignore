@@ -44,3 +44,10 @@ next-env.d.ts
 # uploaded certificates (private)
 /storage/
 .neon
+
+# generated tooling skills
+.agents/
+.claude/
+.cursor/
+.devin/
+.turbo/
